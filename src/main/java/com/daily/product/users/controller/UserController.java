@@ -27,38 +27,38 @@ public class UserController {
         return ResponseEntity.ok(userService.countByEmail(email));
     }
 
-    @GetMapping("/find/{id}")
+    @GetMapping("/my-page/find/{id}")
     public ResponseEntity<UserInfoResultDto> findById(
             @PathVariable Long id) {
         return ResponseEntity.ok(userService.findById(id));
     }
 
-    @PatchMapping("/update/name")
+    @PatchMapping("/my-page/update/name")
     public ResponseEntity<Boolean> updateName(UserUpdateRequestDto userUpdateRequestDto) {
         return ResponseEntity.ok(userService.updateName(userUpdateRequestDto));
     }
 
-    @PatchMapping("/update/password")
+    @PatchMapping("/my-page/update/password")
     public ResponseEntity<Boolean> updatePassword(UserUpdateRequestDto userUpdateRequestDto) {
         return ResponseEntity.ok(userService.updatePassword(userUpdateRequestDto));
     }
 
-    @PatchMapping("/update/address")
+    @PatchMapping("/my-page/update/address")
     public ResponseEntity<Boolean> updateAddress(UserUpdateRequestDto userUpdateRequestDto) {
         return ResponseEntity.ok(userService.updateAddress(userUpdateRequestDto));
     }
 
-    @PatchMapping("/update/login/lock")
+    @PatchMapping("/my-page/update/login/lock")
     public ResponseEntity<Boolean> updateLoginFailLock(UserUpdateRequestDto userUpdateRequestDto) {
         return ResponseEntity.ok(userService.updateLoginFailLock(userUpdateRequestDto));
     }
 
-    @PatchMapping("/update/login/fail")
+    @PatchMapping("/my-page/update/login/fail")
     public ResponseEntity<Boolean> updateLoginFailCount(UserUpdateRequestDto userUpdateRequestDto) {
         return ResponseEntity.ok(userService.updateLoginFailCount(userUpdateRequestDto));
     }
 
-    @PatchMapping("/update/use")
+    @PatchMapping("/my-page/update/use")
     public ResponseEntity<Boolean> updateUseYn(UserUpdateRequestDto userUpdateRequestDto) {
         return ResponseEntity.ok(userService.updateUseYn(userUpdateRequestDto));
     }

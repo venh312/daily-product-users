@@ -1,13 +1,17 @@
 package com.daily.product.users.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
 @Getter
 @Entity(name = "user")
 public class User {

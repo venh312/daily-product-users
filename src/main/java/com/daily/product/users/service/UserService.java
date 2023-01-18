@@ -5,6 +5,7 @@ import com.daily.product.users.dto.UserInfoResultDto;
 import com.daily.product.users.dto.UserSaveRequestDto;
 import com.daily.product.users.dto.UserUpdateRequestDto;
 import com.daily.product.users.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
@@ -12,12 +13,15 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Long save(UserSaveRequestDto userSaveDto) {
+        userSaveDto.setPassword(passwordEncoder.encode(userSaveDto.getPassword()));
         return userRepository.save(userSaveDto.toEntity()).getId();
     }
 
