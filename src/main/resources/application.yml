@@ -1,0 +1,23 @@
+server:
+  port: 17090
+spring:
+  application:
+    name: users
+  profiles:
+    active: local
+  config:
+    import: optional:configserver:http://localhost:8888
+
+management:
+  info:
+    java:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: info,health,refresh
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
