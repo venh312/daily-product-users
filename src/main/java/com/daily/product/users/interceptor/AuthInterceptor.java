@@ -25,19 +25,19 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.info("==> HandlerInterceptor preHandle.");
         String token = tokenProvider.resolveToken(request);
-        boolean validFlag = false;
+        boolean authorization = false;
 
         if (StringUtils.hasText(token)) {
             if (!tokenProvider.getEmail(token).isEmpty())
-                validFlag = true;
+                authorization = true;
         }
 
         HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("validFlag", validFlag);
+        resultMap.put("authorization", authorization);
 
-        if (!validFlag)
+        if (!authorization)
             new MappingJackson2HttpMessageConverter().write(resultMap, MediaType.APPLICATION_JSON, new ServletServerHttpResponse(response));
 
-        return validFlag;
+        return authorization;
     }
 }

@@ -13,7 +13,6 @@ public class UserCookie {
         Cookie cookie = new Cookie("accessToken", value);
         cookie.setMaxAge(ACCESS_TOKEN_SECOND);
         cookie.setPath("/");
-        cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
 
@@ -23,5 +22,16 @@ public class UserCookie {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
+    }
+
+    public String getRefreshToken(Cookie[] cookies) {
+        if (cookies == null) throw new NullPointerException("==> getRefreshTokenCookie Empty Cookie.");
+        String refreshToken = "";
+        for (Cookie cookie:cookies) {
+            if (cookie.getName().equals("refreshToken")) {
+                refreshToken = cookie.getValue();
+            }
+        }
+        return refreshToken;
     }
 }

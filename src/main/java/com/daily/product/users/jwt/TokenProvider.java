@@ -1,5 +1,6 @@
 package com.daily.product.users.jwt;
 
+import com.daily.product.users.service.RedisUserTokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +41,11 @@ public class TokenProvider {
         return doGenerateToken(email, ACCESS_TOKEN_SECOND * 1000l);
     }
 
-    public String generateRefreshToken(String email) {
-        return doGenerateToken(email, REFRESH_TOKEN_SECOND * 1000l);
+    public HashMap<String, String> generateRefreshToken(String email) {
+        HashMap<String, String> hMap = new HashMap<>();
+        hMap.put("token", doGenerateToken(email, REFRESH_TOKEN_SECOND * 1000l));
+        hMap.put("expiration", String.valueOf(REFRESH_TOKEN_SECOND));
+        return hMap;
     }
 
     public String getEmail(String token) {
@@ -85,8 +89,9 @@ public class TokenProvider {
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         log.info("==> BearerToken : {}", bearerToken);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer"))
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
             return bearerToken.substring(7);
+        }
         return null;
     }
 }

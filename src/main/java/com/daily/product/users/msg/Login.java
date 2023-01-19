@@ -5,7 +5,8 @@ public enum Login {
     EMPTY("Empty Data."),
     LOCK("Account is locked."),
     WITHDRAWAL("Withdrawn user."),
-    NOT_MATCH_PASSWORD("Invalid password.");
+    NOT_MATCH_PASSWORD("Invalid password."),
+    REISSUE("Successful reissue.");
 
     private final String value;
     Login(String value) {

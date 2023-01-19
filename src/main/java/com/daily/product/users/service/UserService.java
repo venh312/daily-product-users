@@ -12,6 +12,8 @@ import com.daily.product.users.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Optional;
@@ -21,11 +23,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final RedisUserTokenService redisUserTokenService;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, TokenProvider tokenProvider) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, TokenProvider tokenProvider, RedisUserTokenService redisUserTokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
+        this.redisUserTokenService = redisUserTokenService;
     }
 
     public HashMap<String, Object> loginAction(HttpServletResponse response, UserLoginRequestDto loginRequestDto) {
@@ -47,13 +51,49 @@ public class UserService {
                     resultMap.put("msg", Login.NOT_MATCH_PASSWORD.getValue());
                 } else {
                     UserCookie cookie = new UserCookie();
+                    HashMap<String, String> tokenMap = tokenProvider.generateRefreshToken(loginRequestDto.getEmail());
+                    String token = tokenMap.get("token");
+                    int expiration = Integer.parseInt(tokenMap.get("expiration"));
                     cookie.setAccessToken(response, tokenProvider.generateAccessToken(loginRequestDto.getEmail()));
-                    cookie.setRefreshToken(response, tokenProvider.generateRefreshToken(loginRequestDto.getEmail()));
+                    cookie.setRefreshToken(response, token);
+                    redisUserTokenService.save(loginRequestDto.getEmail(), token, expiration);
                     resultMap.put("code", Login.SUCCESS);
                     resultMap.put("msg", Login.SUCCESS.getValue());
                 }
             }
         }
+        return resultMap;
+    }
+
+    public void logout(HttpServletRequest request, String email) {
+        UserCookie cookie = new UserCookie();
+        if (cookie.getRefreshToken(request.getCookies()).equals(redisUserTokenService.get(email)))
+            redisUserTokenService.delete(email);
+    }
+
+    public HashMap<String, Object> reissue(HttpServletRequest request, HttpServletResponse response, String email) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+
+        String redisToken = redisUserTokenService.get(email);
+        if (!StringUtils.hasText(redisToken))
+            throw new RuntimeException("==> [Reissue Expires] logged out user. ");
+
+        UserCookie cookie = new UserCookie();
+        String cookieRefreshToken = cookie.getRefreshToken(request.getCookies());
+
+        if (!cookieRefreshToken.equals(redisToken))
+            throw new RuntimeException("==> [Reissue] The information in the token does not match.");
+
+        HashMap<String, String> tokenMap = tokenProvider.generateRefreshToken(email);
+        String token = tokenMap.get("token");
+        int expiration = Integer.parseInt(tokenMap.get("expiration"));
+        cookie.setAccessToken(response, tokenProvider.generateAccessToken(email));
+        cookie.setRefreshToken(response, token);
+        redisUserTokenService.save(email, token, expiration);
+
+        resultMap.put("code", Login.REISSUE);
+        resultMap.put("msg", Login.REISSUE.getValue());
+
         return resultMap;
     }
 
