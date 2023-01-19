@@ -43,9 +43,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         resultMap.put("validCode", validCode);
         resultMap.put("validFlag", validFlag);
 
-        if (!validFlag) {
+        if (!validFlag)
             new MappingJackson2HttpMessageConverter().write(resultMap, MediaType.APPLICATION_JSON, new ServletServerHttpResponse(response));
-        }
 
         return validFlag;
     }

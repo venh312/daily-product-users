@@ -1,11 +1,15 @@
 package com.daily.product.users.controller;
 
 import com.daily.product.users.dto.UserInfoResultDto;
+import com.daily.product.users.dto.UserLoginRequestDto;
 import com.daily.product.users.dto.UserSaveRequestDto;
 import com.daily.product.users.dto.UserUpdateRequestDto;
 import com.daily.product.users.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/user")
@@ -14,6 +18,11 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<HashMap<String, Object>> loginAction(HttpServletResponse response, UserLoginRequestDto loginRequestDto) {
+        return ResponseEntity.ok(userService.loginAction(response, loginRequestDto));
     }
 
     @PostMapping("/save")

@@ -40,7 +40,7 @@ public class TokenProvider {
     }
 
     public String generateRefreshToken(String username) {
-        return doGenerateToken(username, ACCESS_TOKEN_SECOND * 1000l);
+        return doGenerateToken(username, REFRESH_TOKEN_SECOND * 1000l);
     }
 	
 	// 토큰 생성
