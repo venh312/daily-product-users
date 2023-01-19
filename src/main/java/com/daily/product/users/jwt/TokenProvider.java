@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +27,7 @@ public class TokenProvider {
     private final long REFRESH_TOKEN_SECOND = 60 * 60 * 24 * 30;
     private final String secretKey;
 
-    public TokenProvider(String secretKey) {
+    public TokenProvider(@Value("${global.jwt.key}") String secretKey) {
         this.secretKey = secretKey;
     }
 
@@ -35,17 +36,21 @@ public class TokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateAccessToken(String username) {
-        return doGenerateToken(username, ACCESS_TOKEN_SECOND * 1000l);
+    public String generateAccessToken(String email) {
+        return doGenerateToken(email, ACCESS_TOKEN_SECOND * 1000l);
     }
 
-    public String generateRefreshToken(String username) {
-        return doGenerateToken(username, REFRESH_TOKEN_SECOND * 1000l);
+    public String generateRefreshToken(String email) {
+        return doGenerateToken(email, REFRESH_TOKEN_SECOND * 1000l);
+    }
+
+    public String getEmail(String token) {
+        return validTokenAndReturnBody(token).get("email", String.class);
     }
 	
 	// 토큰 생성
-    private String doGenerateToken(String username, Long expireTime) {
-        log.info("[Jwt] doGenerateToken username: {}", username);
+    private String doGenerateToken(String email, Long expireTime) {
+        log.info("[Jwt] doGenerateToken email: {}", email);
         log.info("[Jwt] doGenerateToken expireTime: {}", expireTime);
 
         Map<String, Object> headers = new HashMap<>();
@@ -53,11 +58,10 @@ public class TokenProvider {
         headers.put("alg", "HS512");
 
         Claims claims = Jwts.claims();
-        claims.put("username", username);
+        claims.put("email", email);
 
         return Jwts.builder()
             .setHeader(headers)
-            .setSubject("client-auth")
             .setClaims(claims)
             .setExpiration(new Date(System.currentTimeMillis() + expireTime))
             .signWith(getSignKey(), SignatureAlgorithm.HS512)
@@ -80,10 +84,9 @@ public class TokenProvider {
 
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
-            log.info("==> BearerToken : {}", bearerToken);
+        log.info("==> BearerToken : {}", bearerToken);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer"))
             return bearerToken.substring(7);
-        }
         return null;
     }
 }

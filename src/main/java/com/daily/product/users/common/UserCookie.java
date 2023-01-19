@@ -8,10 +8,12 @@ public class UserCookie {
     private final int ACCESS_TOKEN_SECOND = 60 * 30;
     // 7일
     private final int REFRESH_TOKEN_SECOND = 60 * 60 * 24 * 7;
+
     public void setAccessToken(HttpServletResponse response, String value) {
         Cookie cookie = new Cookie("accessToken", value);
         cookie.setMaxAge(ACCESS_TOKEN_SECOND);
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
 
@@ -19,6 +21,7 @@ public class UserCookie {
         Cookie cookie = new Cookie("refreshToken", value);
         cookie.setMaxAge(REFRESH_TOKEN_SECOND);
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
 }

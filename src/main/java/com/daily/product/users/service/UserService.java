@@ -12,7 +12,6 @@ import com.daily.product.users.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Optional;
@@ -48,7 +47,7 @@ public class UserService {
                     resultMap.put("msg", Login.NOT_MATCH_PASSWORD.getValue());
                 } else {
                     UserCookie cookie = new UserCookie();
-                    cookie.setRefreshToken(response, tokenProvider.generateAccessToken(loginRequestDto.getEmail()));
+                    cookie.setAccessToken(response, tokenProvider.generateAccessToken(loginRequestDto.getEmail()));
                     cookie.setRefreshToken(response, tokenProvider.generateRefreshToken(loginRequestDto.getEmail()));
                     resultMap.put("code", Login.SUCCESS);
                     resultMap.put("msg", Login.SUCCESS.getValue());
