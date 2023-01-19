@@ -63,7 +63,7 @@ public class UserController {
         @Parameter(name="address", description = "주소", required = true),
         @Parameter(name="addressDetail", description = "상세주소", required = true),
     })
-    @PostMapping("/save")
+    @PostMapping
     public ResponseEntity<Long> save(UserSaveRequestDto userSaveDto) {
         return ResponseEntity.ok(userService.save(userSaveDto));
     }
