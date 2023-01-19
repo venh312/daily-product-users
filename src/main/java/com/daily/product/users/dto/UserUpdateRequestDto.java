@@ -3,8 +3,6 @@ package com.daily.product.users.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter @Setter
 public class UserUpdateRequestDto {
     private Long id;

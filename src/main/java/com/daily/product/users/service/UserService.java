@@ -124,7 +124,7 @@ public class UserService {
     public boolean updatePassword(UserUpdateRequestDto userUpdateRequestDto) {
         Optional<User> info = userRepository.findById(userUpdateRequestDto.getId());
         if (info.isPresent()) {
-            info.get().updatePassword(userUpdateRequestDto.getPassword());
+            info.get().updatePassword(passwordEncoder.encode(userUpdateRequestDto.getPassword()));
             return true;
         }
         return false;
