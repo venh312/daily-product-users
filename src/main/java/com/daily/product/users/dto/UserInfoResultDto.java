@@ -9,7 +9,6 @@ public class UserInfoResultDto {
     private Long id;
     private String name;
     private String email;
-    private String password;
     private String loginFailLock;
     private int loginFailCount;
     private LocalDateTime lastLoginTime;
@@ -19,7 +18,6 @@ public class UserInfoResultDto {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.password = user.getPassword();
         this.loginFailLock = user.getLoginFailLock();
         this.loginFailCount = user.getLoginFailCount();
         this.lastLoginTime = user.getLastLoginTime();

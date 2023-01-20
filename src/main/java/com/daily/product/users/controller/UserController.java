@@ -141,7 +141,7 @@ public class UserController {
     @Operation(summary = "[USER] 회원 사용여부 변경", description = "등록된 회원의 사용여부를 변경한다.")
     @Parameters({
         @Parameter(name="id", description = "ID", required = true),
-        @Parameter(name="useYn", description = "이름", required = true),
+        @Parameter(name="useYn", description = "사용여부(Y,N)", required = true),
     })
     @PutMapping("/my-page/use")
     public ResponseEntity<Boolean> updateUseYn(UserUpdateRequestDto userUpdateRequestDto) {

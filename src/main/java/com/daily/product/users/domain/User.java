@@ -1,10 +1,8 @@
 package com.daily.product.users.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Entity(name = "user")
-public class User {
+public class User extends BaseTime {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
@@ -25,11 +23,10 @@ public class User {
     private String loginFailLock;
     private int loginFailCount;
     private LocalDateTime lastLoginTime;
-    private LocalDateTime registerTime;
     private String useYn;
 
     @Builder
-    public User(Long id, String name, String email, String password, String address, String addressDetail, String loginFailLock, int loginFailCount, LocalDateTime lastLoginTime, LocalDateTime registerTime, String useYn) {
+    public User(Long id, String name, String email, String password, String address, String addressDetail, String loginFailLock, int loginFailCount, LocalDateTime lastLoginTime, String useYn) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -39,7 +36,6 @@ public class User {
         this.loginFailLock = loginFailLock;
         this.loginFailCount = loginFailCount;
         this.lastLoginTime = lastLoginTime;
-        this.registerTime = registerTime;
         this.useYn = useYn;
     }
 
@@ -54,12 +50,12 @@ public class User {
         this.addressDetail = addressDetail;
     }
     public void updateLoginFailLock(String loginFailLock) {
-        this.password = loginFailLock;
+        this.loginFailLock = loginFailLock;
     }
     public void updateLoginFailCount(int loginFailCount) {
         this.loginFailCount = loginFailCount;
     }
     public void updateUseYn(String useYn) {
-        this.password = useYn;
+        this.useYn = useYn;
     }
 }

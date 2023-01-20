@@ -3,7 +3,6 @@ package com.daily.product.users.dto;
 import com.daily.product.users.domain.User;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
 
 @Getter @Setter
 public class UserSaveRequestDto {
@@ -14,8 +13,6 @@ public class UserSaveRequestDto {
     private String addressDetail;
     private String loginFailLock;
     private int loginFailCount;
-    private LocalDateTime lastLoginTime;
-    private LocalDateTime registerTime;
     private String useYn;
 
     public User toEntity() {
@@ -27,8 +24,6 @@ public class UserSaveRequestDto {
             .addressDetail(addressDetail)
             .loginFailLock("N")
             .loginFailCount(0)
-            .lastLoginTime(lastLoginTime)
-            .registerTime(LocalDateTime.now())
             .useYn("Y")
             .build();
     }
