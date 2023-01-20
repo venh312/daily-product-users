@@ -1,6 +1,5 @@
 package com.daily.product.users.jwt;
 
-import com.daily.product.users.service.RedisUserTokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,7 @@ public class TokenProvider {
     // 30분
     private final long ACCESS_TOKEN_SECOND = 60 * 30;
     // 1개월
-    private final long REFRESH_TOKEN_SECOND = 60 * 60 * 24 * 30;
+    private final long REFRESH_TOKEN_SECOND = 60 * 60 * 24 * 7;
     private final String secretKey;
 
     public TokenProvider(@Value("${global.jwt.key}") String secretKey) {
@@ -89,9 +88,8 @@ public class TokenProvider {
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         log.info("==> BearerToken : {}", bearerToken);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer"))
             return bearerToken.substring(7);
-        }
-        return null;
+        return "";
     }
 }

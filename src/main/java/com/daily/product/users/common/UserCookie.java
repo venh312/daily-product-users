@@ -25,13 +25,11 @@ public class UserCookie {
     }
 
     public String getRefreshToken(Cookie[] cookies) {
-        if (cookies == null) throw new NullPointerException("==> getRefreshTokenCookie Empty Cookie.");
-        String refreshToken = "";
+        if (cookies == null) throw new NullPointerException("==> getRefreshToken Empty Cookie.");
         for (Cookie cookie:cookies) {
-            if (cookie.getName().equals("refreshToken")) {
-                refreshToken = cookie.getValue();
-            }
+            if (cookie.getName().equals("refreshToken"))
+                return cookie.getValue();
         }
-        return refreshToken;
+        return "";
     }
 }

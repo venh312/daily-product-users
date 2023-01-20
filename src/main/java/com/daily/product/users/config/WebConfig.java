@@ -1,7 +1,6 @@
 package com.daily.product.users.config;
 
 import com.daily.product.users.interceptor.AuthInterceptor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
