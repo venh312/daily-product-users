@@ -118,26 +118,6 @@ public class UserController {
         return ResponseEntity.ok(userService.updateAddress(userUpdateRequestDto));
     }
 
-    @Operation(summary = "[USER] 회원 로그인 잠금 여부 변경", description = "등록된 회원의 로그인 잠금 여부를 변경한다.")
-    @Parameters({
-        @Parameter(name="id", description = "ID", required = true),
-        @Parameter(name="loginFailLock", description = "로그인 잠금 여부", required = true),
-    })
-    @PutMapping("/my-page/login-lock")
-    public ResponseEntity<Boolean> updateLoginFailLock(UserUpdateRequestDto userUpdateRequestDto) {
-        return ResponseEntity.ok(userService.updateLoginFailLock(userUpdateRequestDto));
-    }
-
-    @Operation(summary = "[USER] 회원 로그인 실패 횟수 변경", description = "등록된 회원의 로그인 실패 횟수를 변경한다.")
-    @Parameters({
-        @Parameter(name="id", description = "ID", required = true),
-        @Parameter(name="loginFailCount", description = "로그인 실패 횟수", required = true),
-    })
-    @PutMapping("/my-page/login-fail")
-    public ResponseEntity<Boolean> updateLoginFailCount(UserUpdateRequestDto userUpdateRequestDto) {
-        return ResponseEntity.ok(userService.updateLoginFailCount(userUpdateRequestDto));
-    }
-
     @Operation(summary = "[USER] 회원 사용여부 변경", description = "등록된 회원의 사용여부를 변경한다.")
     @Parameters({
         @Parameter(name="id", description = "ID", required = true),

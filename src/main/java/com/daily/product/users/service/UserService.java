@@ -32,37 +32,41 @@ public class UserService {
         this.redisUserTokenService = redisUserTokenService;
     }
 
-    public HashMap<String, Object> loginAction(HttpServletResponse response, UserLoginRequestDto loginRequestDto) {
+    public HashMap<String, Object> loginResult(Login type) {
         HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("code", Login.EMPTY);
-        resultMap.put("msg", Login.EMPTY.getValue());
+        resultMap.put("code", type);
+        resultMap.put("msg", type.getValue());
+        return resultMap;
+    }
+
+    @Transactional
+    public HashMap<String, Object> loginAction(HttpServletResponse response, UserLoginRequestDto loginRequestDto) {
         Optional<User> info = userRepository.findByEmail(loginRequestDto.getEmail());
         if (info.isPresent()) {
             User user = info.get();
-            if ("N".equals(user.getUseYn())) {
-                resultMap.put("code", Login.WITHDRAWAL);
-                resultMap.put("msg", Login.WITHDRAWAL.getValue());
-            } else if ("".equals(user.getLoginFailLock())) {
-                resultMap.put("code", Login.LOCK);
-                resultMap.put("msg", Login.LOCK.getValue());
-            } else {
-                if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
-                    resultMap.put("code", Login.NOT_MATCH_PASSWORD);
-                    resultMap.put("msg", Login.NOT_MATCH_PASSWORD.getValue());
-                } else {
-                    UserCookie cookie = new UserCookie();
-                    HashMap<String, String> tokenMap = tokenProvider.generateRefreshToken(loginRequestDto.getEmail());
-                    String token = tokenMap.get("token");
-                    int expiration = Integer.parseInt(tokenMap.get("expiration"));
-                    cookie.setAccessToken(response, tokenProvider.generateAccessToken(loginRequestDto.getEmail()));
-                    cookie.setRefreshToken(response, token);
-                    redisUserTokenService.save(loginRequestDto.getEmail(), token, expiration);
-                    resultMap.put("code", Login.SUCCESS);
-                    resultMap.put("msg", Login.SUCCESS.getValue());
-                }
+            if ("N".equals(user.getUseYn()))
+                return loginResult(Login.WITHDRAWAL);
+            if ("Y".equals(user.getLoginFailLock()))
+                return loginResult(Login.LOCK);
+            if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+                if (user.getLoginFailCount() > 4)
+                    user.updateLoginFailLock("Y");
+                else
+                    user.updateLoginFailCount(user.getLoginFailCount() + 1);
+                return loginResult(Login.NOT_MATCH_PASSWORD);
             }
+
+            HashMap<String, String> tokenMap = tokenProvider.generateRefreshToken(loginRequestDto.getEmail());
+            String token = tokenMap.get("token");
+            redisUserTokenService.save(loginRequestDto.getEmail(), token, Integer.parseInt(tokenMap.get("expiration")));
+
+            UserCookie cookie = new UserCookie();
+            cookie.setAccessToken(response, tokenProvider.generateAccessToken(loginRequestDto.getEmail()));
+            cookie.setRefreshToken(response, token);
+
+            return loginResult(Login.SUCCESS);
         }
-        return resultMap;
+        return loginResult(Login.EMPTY);
     }
 
     public void logout(HttpServletRequest request, String email) {
@@ -86,10 +90,9 @@ public class UserService {
 
         HashMap<String, String> tokenMap = tokenProvider.generateRefreshToken(email);
         String token = tokenMap.get("token");
-        int expiration = Integer.parseInt(tokenMap.get("expiration"));
         cookie.setAccessToken(response, tokenProvider.generateAccessToken(email));
         cookie.setRefreshToken(response, token);
-        redisUserTokenService.save(email, token, expiration);
+        redisUserTokenService.save(email, token, Integer.parseInt(tokenMap.get("expiration")));
 
         resultMap.put("code", Login.REISSUE);
         resultMap.put("msg", Login.REISSUE.getValue());
