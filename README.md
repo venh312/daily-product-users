@@ -21,7 +21,7 @@
 - Docker Container (MySQL Master/Slave)
 
 ## Microservices Architecture
-![BE  전체구조](https://user-images.githubusercontent.com/13326651/213702803-65d7a5fd-4ec3-4c7c-b4cd-cbf66a8f21af.png)
+![image](https://user-images.githubusercontent.com/13326651/213897469-be760564-567e-45d5-8083-af01e94ef752.png)
 
 ## Server Side Discovery
 서비스를 사용할 클라이언트와 Service Registry 사이에 Load Balancer(현 프로젝트에서는 SC Gateway가 역할 수행)를 두고 Service Registry에 호출할 서비스의 위치를 질의하는 방식
