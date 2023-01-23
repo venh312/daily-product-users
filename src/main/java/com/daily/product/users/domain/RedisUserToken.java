@@ -10,14 +10,14 @@ import org.springframework.data.redis.core.TimeToLive;
 @RedisHash("redisUserToken")
 public class RedisUserToken {
     @Id
-    String email;
+    Long id;
     String token;
     @TimeToLive
     Integer expiration;
 
     @Builder
-    public RedisUserToken(String email, String token, Integer expiration) {
-        this.email = email;
+    public RedisUserToken(Long id, String token, Integer expiration) {
+        this.id = id;
         this.token = token;
         this.expiration = expiration;
     }

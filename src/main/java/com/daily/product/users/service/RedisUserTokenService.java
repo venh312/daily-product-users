@@ -13,21 +13,27 @@ public class RedisUserTokenService {
         this.redisUserTokenRepository = redisUserTokenRepository;
     }
 
-    public void save(String email, String token, int expiration) {
+    public void save(Long id, String token, int expiration) {
         redisUserTokenRepository.save(RedisUserToken.builder()
-            .email(email)
+            .id(id)
             .token(token)
             .expiration(expiration)
             .build());
     }
 
-    public String get(String email) {
-        return redisUserTokenRepository.findById(email)
+    public String getToken(Long id) {
+        return redisUserTokenRepository.findById(id)
             .orElseThrow(IllegalArgumentException::new)
             .getToken();
     }
 
-    public void delete(String email) {
-        redisUserTokenRepository.deleteById(email);
+    public Long getId(String token) {
+        return redisUserTokenRepository.findByToken(token)
+            .orElseThrow(IllegalArgumentException::new)
+            .getId();
+    }
+
+    public void delete(Long id) {
+        redisUserTokenRepository.deleteById(id);
     }
 }

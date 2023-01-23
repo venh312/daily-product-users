@@ -23,7 +23,7 @@ JWT는 토큰 자체를 정보로 사용하는 Self-Contained 방식으로 정�
 public class TokenProvider {
     // 30분
     private final long ACCESS_TOKEN_SECOND = 60 * 30;
-    // 1개월
+    // 7일
     private final long REFRESH_TOKEN_SECOND = 60 * 60 * 24 * 7;
     private final String secretKey;
 
@@ -36,32 +36,32 @@ public class TokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateAccessToken(String email) {
-        return doGenerateToken(email, ACCESS_TOKEN_SECOND * 1000l);
+    public String generateAccessToken(Long id) {
+        return doGenerateToken(id, ACCESS_TOKEN_SECOND * 1000l);
     }
 
-    public HashMap<String, String> generateRefreshToken(String email) {
+    public HashMap<String, String> generateRefreshToken(Long id) {
         HashMap<String, String> hMap = new HashMap<>();
-        hMap.put("token", doGenerateToken(email, REFRESH_TOKEN_SECOND * 1000l));
+        hMap.put("token", doGenerateToken(id, REFRESH_TOKEN_SECOND * 1000l));
         hMap.put("expiration", String.valueOf(REFRESH_TOKEN_SECOND));
         return hMap;
     }
 
-    public String getEmail(String token) {
-        return validTokenAndReturnBody(token).get("email", String.class);
+    public Long getId(String token) {
+        return validTokenAndReturnBody(token).get("id", Long.class);
     }
 	
 	// 토큰 생성
-    private String doGenerateToken(String email, Long expireTime) {
-        log.info("[Jwt] doGenerateToken email: {}", email);
+    private String doGenerateToken(Long id, Long expireTime) {
+        log.info("[Jwt] doGenerateToken email: {}", id);
         log.info("[Jwt] doGenerateToken expireTime: {}", expireTime);
 
         Map<String, Object> headers = new HashMap<>();
         headers.put("typ", "JWT");
-        headers.put("alg", "HS512");
+        headers.put("alg", "HS256");
 
         Claims claims = Jwts.claims();
-        claims.put("email", email);
+        claims.put("id", id);
 
         return Jwts.builder()
             .setHeader(headers)
@@ -73,16 +73,11 @@ public class TokenProvider {
 
     public Claims validTokenAndReturnBody(String token) {
         log.info("[Jwt] validTokenAndReturnBody token: {}", token);
-        try {
-            return Jwts.parserBuilder()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        } catch(ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
-            e.printStackTrace();
-            throw new InvalidParameterException("유효하지 않은 토큰입니다");
-        }
+        return Jwts.parserBuilder()
+            .setSigningKey(getSignKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
     }
 
     public String resolveToken(HttpServletRequest request) {

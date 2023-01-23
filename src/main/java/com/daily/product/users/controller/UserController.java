@@ -26,8 +26,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Operation(summary = "[USER] 로그인 처리", description = "성공 시 쿠키에 accessToken/refreshToken 이 발급된다.")
+    @Operation(summary = "[USER] 로그인 처리", description = "accessToken/refreshToken이 쿠키로 발급된다.")
     @Parameters({
+        @Parameter(name="type", description = "로그인 유형 (HOME:홈페이지, NAVER, KAKAO, GOOGLE, APPLE)", required = true),
         @Parameter(name="email", description = "이메일", required = true),
         @Parameter(name="password", description = "비밀번호", required = true)
     })
@@ -37,26 +38,21 @@ public class UserController {
     }
 
     @Operation(summary = "[USER] 로그아웃", description = "발급 한 AccessToken/refreshToken 을 클라이언트/서버에서 모두 삭제한다.")
-    @Parameters({
-        @Parameter(name="email", description = "이메일", required = true),
-    })
-    @PostMapping("/logout")
-    public ResponseEntity logout(HttpServletRequest request, String email) {
-        userService.logout(request, email);
+    @GetMapping("/logout")
+    public ResponseEntity logout(HttpServletRequest request) {
+        userService.logout(request);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @Operation(summary = "[USER] AccessToken 재발급", description = "refreshToken 으로 AccessToken 을 재발급한다.")
-    @Parameters({
-        @Parameter(name="email", description = "이메일", required = true),
-    })
     @PostMapping("/reissue")
-    public ResponseEntity<HashMap<String, Object>> reissue(HttpServletRequest request, HttpServletResponse response, String email) {
-        return ResponseEntity.ok(userService.reissue(request, response, email));
+    public ResponseEntity<HashMap<String, Object>> reissue(HttpServletRequest request, HttpServletResponse response) {
+        return ResponseEntity.ok(userService.reissue(request, response));
     }
 
     @Operation(summary = "[USER] 등록", description = "회원가입")
     @Parameters({
+        @Parameter(name="type", description = "로그인 유형 (HOME:홈페이지, NAVER, KAKAO, GOOGLE, APPLE)", required = true),
         @Parameter(name="name", description = "이름(닉네임)", required = true),
         @Parameter(name="email", description = "이메일", required = true),
         @Parameter(name="password", description = "비밀번호", required = true),
@@ -68,13 +64,12 @@ public class UserController {
         return ResponseEntity.ok(userService.save(userSaveDto));
     }
 
-    @Operation(summary = "[USER] 이메일 존재 유무", description = "등록된 이메일이 있는지 확인한다.")
+    @Operation(summary = "[USER] 이메일 사용 유무", description = "등록된 이메일이 있는지 확인한다.")
     @Parameters({
         @Parameter(name="email", description = "이메일", required = true),
     })
     @GetMapping("/count/{email}")
-    public ResponseEntity<Integer> countByEmail(
-            @PathVariable String email) {
+    public ResponseEntity<Integer> countByEmail(@PathVariable String email) {
         return ResponseEntity.ok(userService.countByEmail(email));
     }
 

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Getter
 public class UserInfoResultDto {
     private Long id;
+    private String type;
     private String name;
     private String email;
     private String loginFailLock;
@@ -16,6 +17,7 @@ public class UserInfoResultDto {
 
     public UserInfoResultDto(User user) {
         this.id = user.getId();
+        this.type = user.getType();
         this.name = user.getName();
         this.email = user.getEmail();
         this.loginFailLock = user.getLoginFailLock();

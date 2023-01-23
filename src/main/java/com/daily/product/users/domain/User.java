@@ -16,6 +16,7 @@ public class User extends BaseTime {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String type;
     private String email;
     private String password;
     private String address;
@@ -26,8 +27,9 @@ public class User extends BaseTime {
     private String useYn;
 
     @Builder
-    public User(Long id, String name, String email, String password, String address, String addressDetail, String loginFailLock, int loginFailCount, LocalDateTime lastLoginTime, String useYn) {
+    public User(Long id, String type, String name, String email, String password, String address, String addressDetail, String loginFailLock, int loginFailCount, LocalDateTime lastLoginTime, String useYn) {
         this.id = id;
+        this.type = type;
         this.name = name;
         this.email = email;
         this.password = password;

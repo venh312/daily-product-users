@@ -6,7 +6,9 @@ public enum Login {
     LOCK("Account is locked."),
     WITHDRAWAL("Withdrawn user."),
     NOT_MATCH_PASSWORD("Invalid password."),
-    REISSUE("Successful reissue.");
+    REISSUE("Successful reissue."),
+    EXPIRES_REISSUE("Expires reissue."),
+    NOT_MATCH_REISSUE("Token does not match.");
 
     private final String value;
     Login(String value) {

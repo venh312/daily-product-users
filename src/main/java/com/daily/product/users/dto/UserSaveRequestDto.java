@@ -6,6 +6,7 @@ import lombok.Setter;
 
 @Getter @Setter
 public class UserSaveRequestDto {
+    private String type;
     private String name;
     private String email;
     private String password;
@@ -17,6 +18,7 @@ public class UserSaveRequestDto {
 
     public User toEntity() {
         return User.builder()
+            .type(type)
             .name(name)
             .email(email)
             .password(password)
