@@ -26,7 +26,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Operation(summary = "[USER] 로그인 처리", description = "accessToken/refreshToken이 쿠키로 발급된다.")
+    @Operation(summary = "[USER] 로그인 처리", description = "accessToken/refreshToken 이 쿠키에 저장된다.")
     @Parameters({
         @Parameter(name="type", description = "로그인 유형 (HOME:홈페이지, NAVER, KAKAO, GOOGLE, APPLE)", required = true),
         @Parameter(name="email", description = "이메일", required = true),
@@ -73,7 +73,7 @@ public class UserController {
         return ResponseEntity.ok(userService.countByEmail(email));
     }
 
-    @Operation(summary = "[USER] 회원정보 조회", description = "등록된 회원의 정보를 조회한다.")
+    @Operation(summary = "[USER] 회원정보 조회", description = "[Authorization Bearer] 등록된 회원의 정보를 조회한다.")
     @Parameters({
         @Parameter(name="id", description = "ID", required = true),
     })
@@ -82,7 +82,7 @@ public class UserController {
         return ResponseEntity.ok(userService.findById(id));
     }
 
-    @Operation(summary = "[USER] 회원 이름 변경", description = "등록된 회원의 이름을 변경한다.")
+    @Operation(summary = "[USER] 회원 이름 변경", description = "[Authorization Bearer] 등록된 회원의 이름을 변경한다.")
     @Parameters({
         @Parameter(name="id", description = "ID", required = true),
         @Parameter(name="name", description = "이름", required = true),
@@ -92,7 +92,7 @@ public class UserController {
         return ResponseEntity.ok(userService.updateName(userUpdateRequestDto));
     }
 
-    @Operation(summary = "[USER] 회원 비밀번호 변경", description = "등록된 회원의 비밀번호를 변경한다.")
+    @Operation(summary = "[USER] 회원 비밀번호 변경", description = "[Authorization Bearer] 등록된 회원의 비밀번호를 변경한다.")
     @Parameters({
         @Parameter(name="id", description = "ID", required = true),
         @Parameter(name="password", description = "이름", required = true),
@@ -102,7 +102,7 @@ public class UserController {
         return ResponseEntity.ok(userService.updatePassword(userUpdateRequestDto));
     }
 
-    @Operation(summary = "[USER] 회원 주소 변경", description = "등록된 회원의 주소를 변경한다.")
+    @Operation(summary = "[USER] 회원 주소 변경", description = "[Authorization Bearer] 등록된 회원의 주소를 변경한다.")
     @Parameters({
         @Parameter(name="id", description = "ID", required = true),
         @Parameter(name="address", description = "주소", required = true),
@@ -113,7 +113,7 @@ public class UserController {
         return ResponseEntity.ok(userService.updateAddress(userUpdateRequestDto));
     }
 
-    @Operation(summary = "[USER] 회원 사용여부 변경", description = "등록된 회원의 사용여부를 변경한다.")
+    @Operation(summary = "[USER] 회원 사용여부 변경", description = "[Authorization Bearer] 등록된 회원의 사용여부를 변경한다.")
     @Parameters({
         @Parameter(name="id", description = "ID", required = true),
         @Parameter(name="useYn", description = "사용여부(Y,N)", required = true),
