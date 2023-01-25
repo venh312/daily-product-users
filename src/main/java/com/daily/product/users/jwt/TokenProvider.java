@@ -1,5 +1,6 @@
 package com.daily.product.users.jwt;
 
+import com.daily.product.users.common.UserCookie;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -8,16 +9,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidParameterException;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 /*
-JWT(Json Web Token)란 Json 포맷을 이용하여 사용자에 대한 속성을 저장하는 Claim 기반의 Web Token이다.
-JWT는 토큰 자체를 정보로 사용하는 Self-Contained 방식으로 정보를 안전하게 전달한다. */
+JWT(Json Web Token)란 Json 포맷을 이용하여 사용자에 대한 속성을 저장하는 Claim 기반의 Web Token이다. */
 @Slf4j
 @Component
 public class TokenProvider {
@@ -26,14 +26,31 @@ public class TokenProvider {
     // 7일
     private final long REFRESH_TOKEN_SECOND = 60 * 60 * 24 * 7;
     private final String secretKey;
+    private final UserCookie userCookie;
 
-    public TokenProvider(@Value("${global.jwt.key}") String secretKey) {
+    public TokenProvider(@Value("${global.jwt.key}") String secretKey, UserCookie userCookie) {
         this.secretKey = secretKey;
+        this.userCookie = userCookie;
     }
 
     private Key getSignKey() {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public HashMap<String, String> generateToken(HttpServletResponse response, Long id) {
+        HashMap<String, String> refreshTokenMap = generateRefreshToken(id);
+        String accessToken = generateAccessToken(id);
+        String refreshToken = refreshTokenMap.get("token");
+
+        userCookie.setAccessToken(response, accessToken);
+        userCookie.setRefreshToken(response, refreshToken);
+
+        HashMap<String, String> resultMap = new HashMap<>();
+        resultMap.put("accessToken", accessToken);
+        resultMap.put("refreshToken", refreshToken);
+        resultMap.put("expiration", refreshTokenMap.get("expiration"));
+        return resultMap;
     }
 
     public String generateAccessToken(Long id) {

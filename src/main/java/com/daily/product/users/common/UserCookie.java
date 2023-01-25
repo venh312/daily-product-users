@@ -1,8 +1,11 @@
 package com.daily.product.users.common;
 
+import org.springframework.stereotype.Component;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+@Component
 public class UserCookie {
     // 30분
     private final int ACCESS_TOKEN_SECOND = 60 * 30;
@@ -13,6 +16,7 @@ public class UserCookie {
         Cookie cookie = new Cookie("accessToken", value);
         cookie.setMaxAge(ACCESS_TOKEN_SECOND);
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
 

@@ -55,15 +55,13 @@ public class UserService {
                 return loginResult(Login.NOT_MATCH_PASSWORD);
             }
 
-            HashMap<String, String> tokenMap = tokenProvider.generateRefreshToken(user.getId());
-            String token = tokenMap.get("token");
-            redisUserTokenService.save(user.getId(), token, Integer.parseInt(tokenMap.get("expiration")));
+            HashMap<String, String> tokenMap = tokenProvider.generateToken(response, user.getId());
+            redisUserTokenService.save(user.getId(), tokenMap.get("refreshToken"), Integer.parseInt(tokenMap.get("expiration")));
 
-            UserCookie cookie = new UserCookie();
-            cookie.setAccessToken(response, tokenProvider.generateAccessToken(user.getId()));
-            cookie.setRefreshToken(response, token);
+            HashMap<String, Object> resultMap = loginResult(Login.SUCCESS);
+            resultMap.put("accessToken", tokenMap.get("accessToken"));
 
-            return loginResult(Login.SUCCESS);
+            return resultMap;
         }
         return loginResult(Login.EMPTY);
     }
@@ -73,8 +71,7 @@ public class UserService {
     }
 
     public HashMap<String, Object> reissue(HttpServletRequest request, HttpServletResponse response) {
-        UserCookie cookie = new UserCookie();
-        String refreshToken = cookie.getRefreshToken(request.getCookies());
+        String refreshToken = new UserCookie().getRefreshToken(request.getCookies());
 
         Long refreshTokenId = tokenProvider.getId(refreshToken);
         if (refreshTokenId == null)
@@ -84,14 +81,13 @@ public class UserService {
         if (!refreshToken.equals(redisRefreshToken))
             return loginResult(Login.NOT_MATCH_REISSUE);
 
-        HashMap<String, String> tokenMap = tokenProvider.generateRefreshToken(refreshTokenId);
-        String token = tokenMap.get("token");
-        redisUserTokenService.save(refreshTokenId, token, Integer.parseInt(tokenMap.get("expiration")));
+        HashMap<String, String> tokenMap = tokenProvider.generateToken(response, refreshTokenId);
+        redisUserTokenService.save(refreshTokenId, tokenMap.get("refreshToken"), Integer.parseInt(tokenMap.get("expiration")));
 
-        cookie.setAccessToken(response, tokenProvider.generateAccessToken(refreshTokenId));
-        cookie.setRefreshToken(response, token);
+        HashMap<String, Object> resultMap = loginResult(Login.REISSUE);
+        resultMap.put("accessToken", tokenMap.get("accessToken"));
 
-        return loginResult(Login.REISSUE);
+        return resultMap;
     }
 
     public Long save(UserSaveRequestDto userSaveDto) {
